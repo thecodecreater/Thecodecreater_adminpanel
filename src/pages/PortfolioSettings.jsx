@@ -17,7 +17,7 @@ export default function PortfolioSettings() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/portfolio');
+      const res = await axios.get('https://thecodecreater-backend.onrender.com/api/portfolio');
       setProjects(res.data);
     } catch {
       setMessage('Failed to fetch projects');
@@ -36,7 +36,7 @@ export default function PortfolioSettings() {
     try {
       const token = localStorage.getItem('token');
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/portfolio/${editingId}`, {
+        await axios.put(`https://thecodecreater-backend.onrender.com/api/portfolio/${editingId}`, {
           ...project,
           tags: project.tags.split(',').map(t => t.trim()).filter(Boolean)
         }, {
@@ -44,7 +44,7 @@ export default function PortfolioSettings() {
         });
         setMessage('Project updated!');
       } else {
-        await axios.post('http://localhost:5000/api/portfolio', {
+        await axios.post('https://thecodecreater-backend.onrender.com/api/portfolio', {
           ...project,
           tags: project.tags.split(',').map(t => t.trim()).filter(Boolean)
         }, {
@@ -72,7 +72,7 @@ export default function PortfolioSettings() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/portfolio/${id}`, {
+      await axios.delete(`https://thecodecreater-backend.onrender.com/api/portfolio/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('Project deleted!');
@@ -101,7 +101,7 @@ export default function PortfolioSettings() {
               try {
                 const token = localStorage.getItem('token');
                 const res = await axios.post(
-                  'http://localhost:5000/api/upload',
+                  'https://thecodecreater-backend.onrender.com/api/upload',
                   { image: reader.result },
                   { headers: { Authorization: `Bearer ${token}` } }
                 );

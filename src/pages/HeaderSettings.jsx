@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/header';
+const API_URL = process.env.REACT_APP_API_URL || 'https://thecodecreater-backend.onrender.com/api/header';
 
 const emptyMenuItem = { label: '', link: '' };
 
