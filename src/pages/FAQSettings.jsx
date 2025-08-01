@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://thecodecreater-backend.onrender.com/api/faqs';
+const API_URL = `${process.env.REACT_APP_API_URL}/api/faqs`;
 
 export default function FAQSettings() {
   const [faqs, setFaqs] = useState([]);
@@ -50,7 +50,7 @@ export default function FAQSettings() {
       const url = editFaq ? `${API_URL}/${editFaq._id}` : API_URL;
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify(form)
       });
       if (!res.ok) throw new Error('Failed to save FAQ');
@@ -66,7 +66,7 @@ export default function FAQSettings() {
   const handleDelete = async id => {
     if (!window.confirm('Are you sure you want to delete this FAQ?')) return;
     try {
-      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       fetchFaqs();
     } catch (err) {
       setError('Failed to delete FAQ');

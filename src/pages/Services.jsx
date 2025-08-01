@@ -8,7 +8,7 @@ export default function Services() {
   const [msg, setMsg] = useState('');
 
   const fetchServices = () => {
-    fetch('/api/services')
+    fetch(`${process.env.REACT_APP_API_URL}/api/services`)
       .then(res => res.json())
       .then(setServices);
   };
@@ -24,7 +24,7 @@ export default function Services() {
     if (!file) return;
     const reader = new FileReader();
     reader.onloadend = async () => {
-      const res = await fetch('/api/upload', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ image: reader.result })

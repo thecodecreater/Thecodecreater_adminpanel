@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://thecodecreater-backend.onrender.com/api/header';
+const API_URL = `${process.env.REACT_APP_API_URL}/api/header`;
 
 const emptyMenuItem = { label: '', link: '' };
 
@@ -98,8 +98,19 @@ export default function HeaderSettings() {
     setLoading(true);
     setSuccess('');
     setError('');
+
+    // Validation: menuItems must not have empty label or link
+    const filteredMenuItems = header.menuItems.filter(item => item.label.trim() !== '' && item.link.trim() !== '');
+    if (filteredMenuItems.length !== header.menuItems.length) {
+      setLoading(false);
+      setError('Menu items cannot have blank label or link. Please fill all fields or remove empty menu items.');
+      return;
+    }
+
+    // Prepare header data with filtered menuItems
+    const headerToSave = { ...header, menuItems: filteredMenuItems };
     try {
-      await axios.post(API_URL, header);
+      await axios.post(API_URL, headerToSave, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       setSuccess('Header updated successfully!');
       // Refetch latest data after save
       axios.get(API_URL)
@@ -122,7 +133,12 @@ export default function HeaderSettings() {
           }
         });
     } catch (err) {
-      setError('Failed to update header.');
+      // Show backend error if available
+      if (err.response && err.response.data && err.response.data.error) {
+        setError('Failed to update header: ' + err.response.data.error);
+      } else {
+        setError('Failed to update header.');
+      }
     }
     setLoading(false);
     // Auto-hide success/error after 2 seconds

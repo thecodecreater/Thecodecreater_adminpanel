@@ -8,7 +8,7 @@ export default function Testimonials() {
   const [msg, setMsg] = useState('');
 
   const fetchTestimonials = () => {
-    fetch('/api/testimonials')
+    fetch(`${process.env.REACT_APP_API_URL}/api/testimonials`)
       .then(res => res.json())
       .then(setTestimonials);
   };
@@ -24,7 +24,7 @@ export default function Testimonials() {
     if (!file) return;
     const reader = new FileReader();
     reader.onloadend = async () => {
-      const res = await fetch('/api/upload', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ image: reader.result })
