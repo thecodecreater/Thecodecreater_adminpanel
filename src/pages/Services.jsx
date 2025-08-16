@@ -7,11 +7,20 @@ export default function Services() {
   const [editing, setEditing] = useState(null);
   const [msg, setMsg] = useState('');
 
-  const fetchServices = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/api/services`)
-      .then(res => res.json())
-      .then(setServices);
+  const fetchServices = async () => {
+    try {
+      console.log('Fetching services...');
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/services`);
+      console.log('Services API response status:', response.status);
+      const data = await response.json();
+      console.log('Fetched services data:', data);
+      setServices(data);
+      console.log('Services state updated');
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
   };
+ 
 
   useEffect(() => {
     fetchServices();
@@ -24,7 +33,7 @@ export default function Services() {
     if (!file) return;
     const reader = new FileReader();
     reader.onloadend = async () => {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/upload`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: JSON.stringify({ image: reader.result })
@@ -37,20 +46,40 @@ export default function Services() {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    console.log('Form data:', form);
     const method = editing ? 'PUT' : 'POST';
-    const url = editing ? `/api/services/${editing}` : '/api/services';
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-      body: JSON.stringify(form)
-    });
-    if (res.ok) {
-      setMsg(editing ? 'Service updated!' : 'Service added!');
-      setForm({ title: '', description: '', icon: '', image: '' });
-      setEditing(null);
-      fetchServices();
-    } else {
-      setMsg('Error!');
+    const endpoint = editing ? `/api/services/${editing}` : '/api/services';
+    const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+    console.log('Making request to:', url);
+    
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Using token:', token ? 'Token exists' : 'No token found');
+      
+      const res = await fetch(url, {
+        method,
+        headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify(form)
+      });
+      
+      console.log('Response status:', res.status);
+      const responseData = await res.json().catch(e => ({}));
+      console.log('Response data:', responseData);
+      
+      if (res.ok) {
+        setMsg(editing ? 'Service updated!' : 'Service added!');
+        setForm({ title: '', description: '', icon: '', image: '' });
+        setEditing(null);
+        fetchServices();
+      } else {
+        setMsg(`Error: ${responseData.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      setMsg(`Network Error: ${error.message}`);
     }
   };
 
@@ -61,9 +90,12 @@ export default function Services() {
 
   const handleDelete = async id => {
     if (!window.confirm('Delete this service?')) return;
-    const res = await fetch(`/api/services/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/services/${id}`, {
       method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+      }
     });
     if (res.ok) {
       setMsg('Service deleted!');

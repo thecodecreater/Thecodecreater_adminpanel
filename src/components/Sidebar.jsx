@@ -30,6 +30,7 @@ export default function Sidebar({ open, onClose }) {
           <Link to="/headersettings" className="hover:text-cyan-400" onClick={onClose}>Header Settings</Link>
           <Link to="/services" className="hover:text-cyan-400" onClick={onClose}>Services</Link>
           <Link to="/portfolio" className="hover:text-cyan-400" onClick={onClose}>Portfolio</Link>
+          <Link to="/testimonials" className="hover:text-cyan-400" onClick={onClose}>Testimonials</Link>
           <Link to="/blogs" className="hover:text-cyan-400" onClick={onClose}>Blogs</Link>
           <Link to="/faq" className="hover:text-cyan-400" onClick={onClose}>FAQ</Link>
           <Link to="/upload" className="hover:text-cyan-400" onClick={onClose}>Upload</Link>

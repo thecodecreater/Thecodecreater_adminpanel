@@ -8,7 +8,7 @@ export default function Testimonials() {
   const [msg, setMsg] = useState('');
 
   const fetchTestimonials = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/api/testimonials`)
+    fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/testimonials`)
       .then(res => res.json())
       .then(setTestimonials);
   };
@@ -38,7 +38,8 @@ export default function Testimonials() {
   const handleSubmit = async e => {
     e.preventDefault();
     const method = editing ? 'PUT' : 'POST';
-    const url = editing ? `/api/testimonials/${editing}` : '/api/testimonials';
+    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const url = editing ? `${baseUrl}/api/testimonials/${editing}` : `${baseUrl}/api/testimonials`;
     const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
@@ -61,7 +62,7 @@ export default function Testimonials() {
 
   const handleDelete = async id => {
     if (!window.confirm('Delete this testimonial?')) return;
-    const res = await fetch(`/api/testimonials/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/testimonials/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });

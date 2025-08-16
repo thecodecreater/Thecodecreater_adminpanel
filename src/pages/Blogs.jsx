@@ -8,7 +8,7 @@ export default function Blogs() {
   const [msg, setMsg] = useState('');
 
   const fetchBlogs = () => {
-    fetch(`${process.env.REACT_APP_API_URL}/api/blogs`)
+    fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/blogs`)
       .then(res => res.json())
       .then(setBlogs);
   };
@@ -38,7 +38,8 @@ export default function Blogs() {
   const handleSubmit = async e => {
     e.preventDefault();
     const method = editing ? 'PUT' : 'POST';
-    const url = editing ? `/api/blogs/${editing}` : '/api/blogs';
+    const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const url = editing ? `${baseUrl}/api/blogs/${editing}` : `${baseUrl}/api/blogs`;
     const tagsArr = form.tags.split(',').map(t => t.trim()).filter(Boolean);
     const res = await fetch(url, {
       method,
@@ -62,7 +63,7 @@ export default function Blogs() {
 
   const handleDelete = async id => {
     if (!window.confirm('Delete this blog?')) return;
-    const res = await fetch(`/api/blogs/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/blogs/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
     });

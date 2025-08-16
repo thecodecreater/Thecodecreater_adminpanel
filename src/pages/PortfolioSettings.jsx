@@ -17,7 +17,7 @@ export default function PortfolioSettings() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/portfolio`);
+      const res = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/portfolio`);
       setProjects(res.data);
     } catch {
       setMessage('Failed to fetch projects');
@@ -36,7 +36,7 @@ export default function PortfolioSettings() {
     try {
       const token = localStorage.getItem('token');
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/portfolio/${editingId}`, {
+        await axios.put(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/portfolio/${editingId}`, {
           ...project,
           tags: project.tags.split(',').map(t => t.trim()).filter(Boolean)
         }, {
@@ -44,7 +44,7 @@ export default function PortfolioSettings() {
         });
         setMessage('Project updated!');
       } else {
-        await axios.post(`${process.env.REACT_APP_API_URL}/api/portfolio`, {
+        await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/portfolio`, {
           ...project,
           tags: project.tags.split(',').map(t => t.trim()).filter(Boolean)
         }, {
@@ -72,7 +72,7 @@ export default function PortfolioSettings() {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/portfolio/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/portfolio/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessage('Project deleted!');
@@ -101,9 +101,9 @@ export default function PortfolioSettings() {
               try {
                 const token = localStorage.getItem('token');
                 const res = await axios.post(
-                  `${process.env.REACT_APP_API_URL}/api/upload`,
+                  `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/upload`,
                   { image: reader.result },
-                  { headers: { Authorization: `Bearer ${token}` } }
+                  { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
                 );
                 setProject(prev => ({ ...prev, image: res.data.url || res.data.image || '' }));
                 setMessage('Image uploaded!');
